@@ -1,0 +1,33 @@
+{
+  "name": "techvideo-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsx watch src/api.ts",
+    "start": "tsx src/api.ts"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.6.2",
+    "prisma": "^5.3.1",
+    "tsx": "^3.12.10",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.418.0",
+    "@fastify/cors": "^8.4.0",
+    "@fastify/multipart": "^7.7.3",
+    "@prisma/client": "^5.3.1",
+    "ai": "^2.2.13",
+    "fastify": "^4.23.2",
+    "openai": "^4.10.0",
+    "zod": "^3.22.2"
+  }
+}
