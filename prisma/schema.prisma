@@ -16,6 +16,7 @@ model Video {
   path          String
   transcription String?
   createdAt     DateTime @default(now())
+  uploadName    String
 }
 
 model Prompt {

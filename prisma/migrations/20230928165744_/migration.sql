@@ -5,6 +5,7 @@ CREATE TABLE "Video" (
     "path" TEXT NOT NULL,
     "transcription" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "uploadName" TEXT NOT NULL,
 
     CONSTRAINT "Video_pkey" PRIMARY KEY ("id")
 );
