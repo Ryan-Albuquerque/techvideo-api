@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx watch src/api.ts",
     "start": "tsx src/api.ts",
-    "build": "npx prisma generate && npx prisma db seed && npm run start"
+    "build": "npx prisma generate && npx prisma db seed "
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
