@@ -6,6 +6,8 @@ const app = fastify();
 
 app.register(fastifyCors, {
   origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  credentials: true,
 });
 
 app.register(Routes);
