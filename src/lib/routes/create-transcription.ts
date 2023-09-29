@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 import { FastifyInstance } from "fastify";
 import { createReadStream, createWriteStream, unlinkSync } from "node:fs";
 import { z } from "zod";

@@ -1,15 +1,14 @@
+require("dotenv").config();
+
 import { FastifyInstance } from "fastify";
 import { fastifyMultipart } from "@fastify/multipart";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
-import {  pipeline } from "node:stream";
+import { pipeline } from "node:stream";
 import { promisify } from "node:util";
 import fs, { unlinkSync } from "node:fs";
 import { prisma } from "../database/index";
-import {
-  PutObjectCommand,
-  S3Client,
-} from "@aws-sdk/client-s3";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 
 const pump = promisify(pipeline);
 

@@ -4,7 +4,9 @@ import { fastifyCors } from "@fastify/cors";
 
 const app = fastify();
 
-app.register(fastifyCors, {});
+app.register(fastifyCors, {
+  origin: "*",
+});
 
 app.register(Routes);
 
