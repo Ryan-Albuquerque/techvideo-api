@@ -12,4 +12,4 @@ app.register(fastifyCors, {
 
 app.register(Routes);
 
-app.listen({ port: 3333 }).then(() => console.log("API running"));
+app.listen().then((address) => console.log(`API running in ${address} port`));
