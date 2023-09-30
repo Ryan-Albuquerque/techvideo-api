@@ -21,7 +21,7 @@ export async function CreateTranscription(app: FastifyInstance) {
         prompt: z.string().optional(),
       });
 
-      const { prompt } = bodySchema.parse(req.body);
+      const body = bodySchema.parse(req.body);
 
       const video = await prisma.video.findUniqueOrThrow({
         where: {
@@ -40,7 +40,7 @@ export async function CreateTranscription(app: FastifyInstance) {
         language: "en",
         response_format: "json",
         temperature: 0,
-        prompt,
+        prompt : body.prompt,
       });
 
       const transcription = response.text;
