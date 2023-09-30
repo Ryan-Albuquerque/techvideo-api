@@ -1,3 +1,4 @@
+require("dotenv").config();
 import { fastify } from "fastify";
 import { Routes } from "./lib/routes/routes";
 import { fastifyCors } from "@fastify/cors";
@@ -12,4 +13,6 @@ app.register(fastifyCors, {
 
 app.register(Routes);
 
-app.listen().then((address) => console.log(`API running in ${address} port`));
+app
+  .listen({ port: process.env.IS_LOCAL ? 3333 : 0 })
+  .then((address) => console.log(`API running in ${address} port`));
