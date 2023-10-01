@@ -6,7 +6,7 @@ import { openai } from "../resources/openai";
 import { delay } from "../utils/delay";
 
 export async function GenerateAiContent(app: FastifyInstance) {
-  app.post("/content", async (req, reply) => {
+  app.post("/content", async (req, res) => {
     const bodySchema = z.object({
       videoId: z.string().uuid(),
       generatorType: z.string(),
@@ -24,7 +24,7 @@ export async function GenerateAiContent(app: FastifyInstance) {
     });
 
     if (!video.transcription) {
-      return reply
+      return res
         .status(400)
         .send({ error: "Video transcription was not generated yet." });
     }
@@ -49,7 +49,7 @@ export async function GenerateAiContent(app: FastifyInstance) {
     );
 
     if (!promptMessage)
-      return reply.status(400).send({ error: "Prompt is not informed." });
+      return res.status(400).send({ error: "Prompt is not informed." });
 
     await delay(3000);
 
@@ -62,7 +62,7 @@ export async function GenerateAiContent(app: FastifyInstance) {
 
     const stream = OpenAIStream(response);
 
-    streamToResponse(stream, reply.raw, {
+    streamToResponse(stream, res.raw, {
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
