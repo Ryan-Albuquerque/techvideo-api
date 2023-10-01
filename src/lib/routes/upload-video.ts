@@ -11,32 +11,32 @@ export async function UploadVideo(app: FastifyInstance) {
     },
   });
 
-  app.post("/", async (request, response) => {
+  app.post("/", async (req, res) => {
     try {
-      const data = await request.file();
+      const data = await req.file();
 
       if (!data) {
-        return response.status(400).send({ error: "not send videos" });
+        return res.status(400).send({ error: "not send videos" });
       }
 
       const extension = path.extname(data.filename);
 
       if (extension !== ".mp3") {
-        return response.status(400).send({ error: "invalid format" });
+        return res.status(400).send({ error: "invalid format" });
       }
 
       const { fileUploadName, uploadDir } = await uploadFile(data);
 
-      const res = await prisma.video.create({
+      const response = await prisma.video.create({
         data: {
           name: data.filename,
           path: uploadDir,
           uploadName: fileUploadName,
         },
       });
-      return response.send(res);
+      return res.send(response);
     } catch (error) {
-      return response.status(400).send(error);
+      return res.status(400).send(error);
     }
   });
 }
