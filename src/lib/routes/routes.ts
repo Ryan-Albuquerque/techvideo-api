@@ -10,5 +10,5 @@ export async function Routes(app: FastifyInstance) {
   app.register(CreateTranscription, { prefix: "/video" });
   app.register(GenerateAiContent, { prefix: "/ai" });
   app.register(ListPrompts, { prefix: "/prompts" });
-  app.register(GenerateAskMe, { prefix: "/prompt" });
+  app.register(GenerateAskMe, { prefix: "/ask-me" });
 }
