@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { openai } from "../resources/openai";
 import { OpenAIStream, streamToResponse } from "ai";
+import { delay } from "../utils/delay";
 
 export async function GenerateAskMe(app: FastifyInstance) {
   app.post("/", async (req, res) => {
@@ -12,6 +13,8 @@ export async function GenerateAskMe(app: FastifyInstance) {
       });
 
       const { prompt, temperature } = bodySchema.parse(req.body);
+
+      await delay(3000);
 
       const response = await openai.chat.completions.create({
         model: "gpt-3.5-turbo-16k",

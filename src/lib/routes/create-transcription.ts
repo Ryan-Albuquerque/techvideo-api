@@ -6,6 +6,7 @@ import { openai } from "../resources/openai";
 import { downloadFile } from "../resources/cloudflare";
 import { readdir, unlink } from "node:fs/promises";
 import { getTmpDir, removeFile } from "../utils/fileHandler";
+import { delay } from "../utils/delay";
 
 export async function CreateTranscription(app: FastifyInstance) {
   app.post("/:videoId/transcription", async (req, res) => {
@@ -34,6 +35,8 @@ export async function CreateTranscription(app: FastifyInstance) {
       const videoPath = video.path;
       const audioReadStream = createReadStream(videoPath);
 
+      await delay(3000);
+      
       const response = await openai.audio.transcriptions.create({
         file: audioReadStream,
         model: "whisper-1",
