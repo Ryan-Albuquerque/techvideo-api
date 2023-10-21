@@ -1,7 +1,8 @@
 require("dotenv").config();
-import { fastify } from "fastify";
+import fastify from "fastify";
+import fastifyCors from "@fastify/cors";
+import fastifyRedis from "@fastify/redis";
 import { Routes } from "./lib/routes/routes";
-import { fastifyCors } from "@fastify/cors";
 
 const app = fastify();
 
@@ -11,8 +12,17 @@ app.register(fastifyCors, {
   credentials: true,
 });
 
+app.register(fastifyRedis, {
+  host: "127.0.0.1",
+  port: 6379,
+});
+
 app.register(Routes);
 
-app
-  .listen({ port: process.env.IS_LOCAL ? 3333 : 0 })
-  .then((address) => console.log(`API running in ${address} port`));
+app.listen({ port: process.env.IS_LOCAL ? 3333 : 0 }, (err, address) => {
+  if (err) {
+    console.error(err);
+    process.exit(1);
+  }
+  console.log(`API running on ${address}`);
+});
