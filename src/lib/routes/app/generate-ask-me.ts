@@ -1,8 +1,8 @@
 import { FastifyInstance } from "fastify";
 import { z } from "zod";
-import { openai } from "../resources/openai";
+import { openai } from "../../resources/openai";
 import { OpenAIStream, streamToResponse } from "ai";
-import { delay } from "../utils/delay";
+import { delay } from "../../utils/delay";
 
 export async function GenerateAskMe(app: FastifyInstance) {
   app.post("/", async (req, res) => {

@@ -1,9 +1,9 @@
 import { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { streamToResponse, OpenAIStream } from "ai";
-import { prisma } from "../database";
-import { openai } from "../resources/openai";
-import { delay } from "../utils/delay";
+import { prisma } from "../../database";
+import { openai } from "../../resources/openai";
+import { delay } from "../../utils/delay";
 
 export async function GenerateAiContent(app: FastifyInstance) {
   app.post("/content", async (req, res) => {

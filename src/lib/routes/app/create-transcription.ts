@@ -1,12 +1,12 @@
 import { FastifyInstance } from "fastify";
 import { createReadStream } from "node:fs";
 import { z } from "zod";
-import { prisma } from "../database";
-import { openai } from "../resources/openai";
-import { downloadFile } from "../resources/cloudflare";
+import { prisma } from "../../database";
+import { openai } from "../../resources/openai";
+import { downloadFile } from "../../resources/cloudflare";
 import { readdir, unlink } from "node:fs/promises";
-import { getTmpDir, removeFile } from "../utils/fileHandler";
-import { delay } from "../utils/delay";
+import { getTmpDir, removeFile } from "../../utils/fileHandler";
+import { delay } from "../../utils/delay";
 
 export async function CreateTranscription(app: FastifyInstance) {
   app.post("/:videoId/transcription", async (req, res) => {
@@ -36,14 +36,14 @@ export async function CreateTranscription(app: FastifyInstance) {
       const audioReadStream = createReadStream(videoPath);
 
       await delay(3000);
-      
+
       const response = await openai.audio.transcriptions.create({
         file: audioReadStream,
         model: "whisper-1",
         language: "en",
         response_format: "json",
         temperature: 0,
-        prompt : body.prompt,
+        prompt: body.prompt,
       });
 
       const transcription = response.text;
@@ -57,7 +57,7 @@ export async function CreateTranscription(app: FastifyInstance) {
         },
       });
 
-      removeFile(video.path)
+      removeFile(video.path);
 
       return res.send({
         transcription,
