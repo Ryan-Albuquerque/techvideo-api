@@ -4,13 +4,11 @@ import { CreateTranscription } from "./create-transcription";
 import { GenerateAiContent } from "./generate-ai-content";
 import { ListPrompts } from "./list-prompts";
 import { GenerateAskMe } from "./generate-ask-me";
-import { CreateTaskMiddleware } from "../../resources/tasks";
+import { CreateTask } from "../../resources/tasks";
 
 export async function AppRoutes(app: FastifyInstance) {
-  app.addHook("onRequest", async (req, res) =>
-    CreateTaskMiddleware(app, req, res)
-  );
-  app.register(UploadVideo, { prefix: "/video" });
+  app.addHook("onRequest", async (req, res) => CreateTask(app, req, res));
+  app.register(UploadVideo, { prefix: "/upload-video" });
   app.register(CreateTranscription, { prefix: "/video" });
   app.register(GenerateAiContent, { prefix: "/ai" });
   app.register(ListPrompts, { prefix: "/prompts" });

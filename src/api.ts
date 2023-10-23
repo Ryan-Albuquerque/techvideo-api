@@ -4,7 +4,7 @@ import fastifyCors from "@fastify/cors";
 import fastifyRedis from "@fastify/redis";
 import { Routes } from "./lib/routes/routes";
 
-const app = fastify();
+const app = fastify({ logger: true });
 
 app.register(fastifyCors, {
   origin: "*",
@@ -12,10 +12,13 @@ app.register(fastifyCors, {
   credentials: true,
 });
 
-app.register(fastifyRedis, {
-  host: "127.0.0.1",
-  port: 6379,
-});
+app.register(
+  fastifyRedis,
+  {
+    url: process.env.REDIS_URL,
+  },
+  { pluginTimeout: 10000 }
+);
 
 app.register(Routes);
 

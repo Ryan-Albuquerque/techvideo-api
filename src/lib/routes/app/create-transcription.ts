@@ -7,9 +7,13 @@ import { downloadFile } from "../../resources/cloudflare";
 import { readdir, unlink } from "node:fs/promises";
 import { getTmpDir, removeFile } from "../../utils/fileHandler";
 import { delay } from "../../utils/delay";
+import { UpdateTaskById } from "../../resources/tasks";
 
 export async function CreateTranscription(app: FastifyInstance) {
   app.post("/:videoId/transcription", async (req, res) => {
+    const taskId = res.locals.taskId;
+    let response, error;
+
     const dir = await getTmpDir();
     try {
       const paramsSchema = z.object({
@@ -30,14 +34,20 @@ export async function CreateTranscription(app: FastifyInstance) {
         },
       });
 
+      if (!video) {
+        return res.status(400).send({ message: "No video found" });
+      }
+
+      res.send({ taskId });
+
       await downloadFile(video.uploadName);
 
       const videoPath = video.path;
       const audioReadStream = createReadStream(videoPath);
 
-      await delay(3000);
+      await delay(5000);
 
-      const response = await openai.audio.transcriptions.create({
+      const result = await openai.audio.transcriptions.create({
         file: audioReadStream,
         model: "whisper-1",
         language: "en",
@@ -46,7 +56,7 @@ export async function CreateTranscription(app: FastifyInstance) {
         prompt: body.prompt,
       });
 
-      const transcription = response.text;
+      const transcription = result.text;
 
       await prisma.video.update({
         where: {
@@ -59,13 +69,15 @@ export async function CreateTranscription(app: FastifyInstance) {
 
       removeFile(video.path);
 
-      return res.send({
-        transcription,
-      });
-    } catch (error) {
+      response = { transcription };
+    } catch (err) {
       await readdir(dir).then((f) => Promise.all(f.map((e) => unlink(e))));
 
-      return res.send(error).status(400);
+      error = err;
+    } finally {
+      const result = await UpdateTaskById(app, taskId, response, error);
+
+      return res.send({ result });
     }
   });
 }

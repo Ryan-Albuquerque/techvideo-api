@@ -3,6 +3,7 @@ import { fastifyMultipart } from "@fastify/multipart";
 import path from "node:path";
 import { prisma } from "../../database/index";
 import { uploadFile } from "../../resources/cloudflare";
+import { UpdateTaskById } from "../../resources/tasks";
 
 export async function UploadVideo(app: FastifyInstance) {
   app.register(fastifyMultipart, {
@@ -12,6 +13,7 @@ export async function UploadVideo(app: FastifyInstance) {
   });
 
   app.post("/", async (req, res) => {
+    const taskId = res.locals.taskId;
     let response, error;
     try {
       const data = await req.file();
@@ -26,7 +28,7 @@ export async function UploadVideo(app: FastifyInstance) {
         return res.status(400).send({ error: "invalid format" });
       }
 
-      res.send();
+      res.send({ taskId });
 
       const { fileUploadName, uploadDir } = await uploadFile(data);
 
@@ -40,7 +42,9 @@ export async function UploadVideo(app: FastifyInstance) {
     } catch (e) {
       error = JSON.stringify(e);
     } finally {
-      console.log("");
+      const result = await UpdateTaskById(app, taskId, response, error);
+
+      return res.send({ result });
     }
   });
 }
