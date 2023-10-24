@@ -1,11 +1,14 @@
 import { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { openai } from "../../resources/openai";
-import { OpenAIStream, streamToResponse } from "ai";
 import { delay } from "../../utils/delay";
+import { UpdateTaskById } from "../../resources/tasks";
 
 export async function GenerateAskMe(app: FastifyInstance) {
   app.post("/", async (req, res) => {
+    const taskId = res.locals.taskId;
+    let response, error;
+
     try {
       const bodySchema = z.object({
         prompt: z.string(),
@@ -14,25 +17,22 @@ export async function GenerateAskMe(app: FastifyInstance) {
 
       const { prompt, temperature } = bodySchema.parse(req.body);
 
+      res.send({ taskId });
+
       await delay(3000);
 
-      const response = await openai.chat.completions.create({
+      const completionResult = await openai.chat.completions.create({
         model: "gpt-3.5-turbo-16k",
         temperature,
         messages: [{ role: "user", content: prompt }],
-        stream: true,
       });
 
-      const stream = OpenAIStream(response);
-
-      streamToResponse(stream, res.raw, {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        },
-      });
+      response = { completion: completionResult.choices[0].message.content };
     } catch (error) {
-      return res.send(error).status(400);
+      error = JSON.stringify(error);
+    } finally {
+      const result = await UpdateTaskById(app, taskId, response, error);
+      return res.send({ result });
     }
   });
 }
