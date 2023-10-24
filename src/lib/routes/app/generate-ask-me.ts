@@ -45,7 +45,7 @@ export async function GenerateAskMe(app: FastifyInstance) {
       console.error(
         `[${GenerateAskMe.name}] - Error executing: ${stringifyError}`
       );
-      error = JSON.stringify(err);
+      error = err;
     } finally {
       await UpdateTaskById(app, taskId, response, error);
       console.info(
