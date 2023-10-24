@@ -7,8 +7,8 @@ const key = "tasks";
 
 export const CreateTask = async (
   app: FastifyInstance,
-  req,
-  res
+  req: any,
+  res: any
 ): Promise<void> => {
   const { redis } = app;
   const delayTime = 1000 * 60 * 5; //5min
@@ -68,7 +68,7 @@ export const UpdateTaskById = async (
   errors?: object
 ): Promise<Task> => {
   const { redis } = app;
-  let taskUpdated;
+  let taskUpdated = {} as Task;
 
   const taskListString = await redis.get(key);
 

@@ -9,6 +9,7 @@ import { getTmpDir, createFile, removeFile } from "../utils/fileHandler";
 import { Status } from "../utils/enums/status.enum";
 import { Readable } from "node:stream";
 import path from "node:path";
+import { MultipartFile } from "@fastify/multipart";
 
 const S3 = new S3Client({
   region: "auto",
@@ -19,8 +20,17 @@ const S3 = new S3Client({
   },
 });
 
-export const uploadFile = async (file) => {
-  let result, error;
+type UploadFileResponse = {
+  status: Status;
+  uploadDir: string;
+  fileUploadName: string;
+};
+
+export const uploadFile = async (
+  file: MultipartFile
+): Promise<UploadFileResponse> => {
+  let result;
+  let error;
   const { fileUploadName, uploadDir } = await createFile(file);
   try {
     const resultUpload = await S3.send(
@@ -50,11 +60,11 @@ export const uploadFile = async (file) => {
 
     if (error) throw error;
 
-    return result;
+    return result as UploadFileResponse;
   }
 };
 
-export const downloadFile = async (fileName) => {
+export const downloadFile = async (fileName: string) => {
   const uploadDir = path.resolve(await getTmpDir(), fileName);
 
   try {
