@@ -70,8 +70,8 @@ export async function GenerateAiContent(app: FastifyInstance) {
     } catch (error) {
       error = JSON.stringify(error);
     } finally {
-      const result = await UpdateTaskById(app, taskId, response, error);
-      return res.send({ result });
+      await UpdateTaskById(app, taskId, response, error);
+      return;
     }
   });
 }

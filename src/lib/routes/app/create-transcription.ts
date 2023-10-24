@@ -75,14 +75,14 @@ export async function CreateTranscription(app: FastifyInstance) {
 
       error = err;
     } finally {
-      const result = await UpdateTaskById(
+      await UpdateTaskById(
         app,
         taskId,
         response,
         error as object
       );
 
-      return res.send({ result });
+      return;
     }
   });
 }
