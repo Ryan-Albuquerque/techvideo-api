@@ -4,10 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsx watch src/api.ts",
-    "start": "tsx src/api.ts",
-    "build": "prisma generate && prisma db seed"
+    "generate": "npx prisma generate",
+    "deploy": "npx prisma migrate deploy",
+    "dev": "npm run generate && tsx watch src/api.ts",
+    "build": "npm run generate && npx prisma db seed",
+    "start": "npm run build && tsx src/api.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
