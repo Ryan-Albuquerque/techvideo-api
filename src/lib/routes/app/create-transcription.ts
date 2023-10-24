@@ -6,7 +6,6 @@ import { openai } from "../../resources/openai";
 import { DownloadFile } from "../../resources/cloudflare";
 import { readdir, unlink } from "node:fs/promises";
 import { getTmpDir, removeFile } from "../../utils/fileHandler";
-import { delay } from "../../utils/delay";
 import { UpdateTaskById } from "../../resources/tasks";
 
 export async function CreateTranscription(app: FastifyInstance) {
@@ -50,8 +49,6 @@ export async function CreateTranscription(app: FastifyInstance) {
       const audioReadStream = createReadStream(videoPath);
 
       console.info(`[${CreateTranscription.name}] - Starting AI query`);
-
-      await delay(5000);
 
       const result = await openai.audio.transcriptions.create({
         file: audioReadStream,

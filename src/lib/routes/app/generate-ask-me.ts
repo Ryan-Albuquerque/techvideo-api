@@ -1,7 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { openai } from "../../resources/openai";
-import { delay } from "../../utils/delay";
 import { UpdateTaskById } from "../../resources/tasks";
 
 export async function GenerateAskMe(app: FastifyInstance) {
@@ -26,8 +25,6 @@ export async function GenerateAskMe(app: FastifyInstance) {
       res.send({ taskId });
 
       console.info(`[${GenerateAskMe.name}] - Starting AI query`);
-
-      await delay(3000);
 
       const completionResult = await openai.chat.completions.create({
         model: "gpt-3.5-turbo-16k",

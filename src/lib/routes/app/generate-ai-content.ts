@@ -3,7 +3,6 @@ import { z } from "zod";
 import { streamToResponse, OpenAIStream } from "ai";
 import { prisma } from "../../database";
 import { openai } from "../../resources/openai";
-import { delay } from "../../utils/delay";
 import { UpdateTaskById } from "../../resources/tasks";
 
 export async function GenerateAiContent(app: FastifyInstance) {
@@ -65,8 +64,6 @@ export async function GenerateAiContent(app: FastifyInstance) {
       res.send({ taskId });
 
       console.info(`[${GenerateAiContent.name}] - Starting AI query`);
-
-      await delay(3000);
 
       const completionResult = await openai.chat.completions.create({
         model: "gpt-3.5-turbo-16k",
