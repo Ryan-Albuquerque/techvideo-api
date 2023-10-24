@@ -4,7 +4,7 @@ import fastifyCors from "@fastify/cors";
 import fastifyRedis from "@fastify/redis";
 import { Routes } from "./lib/routes/routes";
 
-const app = fastify({ logger: true });
+const app = fastify();
 
 app.register(fastifyCors, {
   origin: "*",

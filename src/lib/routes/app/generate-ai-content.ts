@@ -8,10 +8,14 @@ import { UpdateTaskById } from "../../resources/tasks";
 
 export async function GenerateAiContent(app: FastifyInstance) {
   app.post("/content", async (req, res) => {
+    console.info(`[SERVICE] - Starting ${GenerateAiContent.name}`);
+
     const taskId = (res as any).locals.taskId;
     let response, error;
 
     try {
+      console.info(`[${GenerateAiContent.name}] - Starting validations`);
+
       const bodySchema = z.object({
         videoId: z.string().uuid(),
         generatorType: z.string(),
@@ -56,7 +60,11 @@ export async function GenerateAiContent(app: FastifyInstance) {
       if (!promptMessage)
         return res.status(400).send({ error: "Prompt is not informed." });
 
+      console.info(`[${GenerateAiContent.name}] - Returning taskId: ${taskId}`);
+
       res.send({ taskId });
+
+      console.info(`[${GenerateAiContent.name}] - Starting AI query`);
 
       await delay(3000);
 
@@ -66,12 +74,26 @@ export async function GenerateAiContent(app: FastifyInstance) {
         messages: [{ role: "user", content: promptMessage }],
       });
 
+      console.info(
+        `[${GenerateAiContent.name}] - AI query completed successfully at ${completionResult.created}`
+      );
+
       response = { completion: completionResult.choices[0].message.content };
-    } catch (error) {
-      error = JSON.stringify(error);
+    } catch (err) {
+      const stringifyError = JSON.stringify(err);
+      console.error(
+        `[${GenerateAiContent.name}] - Error executing: ${stringifyError}`
+      );
+      error = err;
     } finally {
-      const result = await UpdateTaskById(app, taskId, response, error);
-      return res.send({ result });
+      await UpdateTaskById(app, taskId, response, error);
+      console.info(
+        `[${GenerateAiContent.name}] - Updating task result: ${JSON.stringify(
+          response
+        )} - error: ${JSON.stringify(error)}`
+      );
+
+      return;
     }
   });
 }

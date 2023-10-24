@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import { fastifyMultipart } from "@fastify/multipart";
 import path from "node:path";
 import { prisma } from "../../database/index";
-import { uploadFile } from "../../resources/cloudflare";
+import { UploadFile } from "../../resources/cloudflare";
 import { UpdateTaskById } from "../../resources/tasks";
 
 export async function UploadVideo(app: FastifyInstance) {
@@ -13,9 +13,12 @@ export async function UploadVideo(app: FastifyInstance) {
   });
 
   app.post("/", async (req, res) => {
+    console.info(`[SERVICE] - Starting ${UploadVideo.name}`);
     const taskId = (res as any).locals.taskId;
     let response, error;
     try {
+      console.info(`[${UploadVideo.name}] - Starting validations`);
+
       const data = await req.file();
 
       if (!data) {
@@ -28,9 +31,13 @@ export async function UploadVideo(app: FastifyInstance) {
         return res.status(400).send({ error: "invalid format" });
       }
 
+      console.info(`[${UploadVideo.name}] - Returning taskId: ${taskId}`);
+
       res.send({ taskId });
 
-      const { fileUploadName, uploadDir } = await uploadFile(data);
+      const { fileUploadName, uploadDir } = await UploadFile(data);
+
+      console.info(`[${UploadVideo.name}] - File uploaded: ${uploadDir}`);
 
       response = await prisma.video.create({
         data: {
@@ -39,17 +46,21 @@ export async function UploadVideo(app: FastifyInstance) {
           uploadName: fileUploadName,
         },
       });
-    } catch (e) {
-      error = e;
+    } catch (err) {
+      const stringifyError = JSON.stringify(err);
+      console.error(
+        `[${UploadVideo.name}] - Error executing: ${stringifyError}`
+      );
+      error = err;
     } finally {
-      const result = await UpdateTaskById(
-        app,
-        taskId,
-        response,
-        error as object
+      await UpdateTaskById(app, taskId, response, error as object);
+      console.info(
+        `[${UploadVideo.name}] - Updating task result: ${JSON.stringify(
+          response
+        )} - error: ${JSON.stringify(error)}`
       );
 
-      return res.send({ result });
+      return;
     }
   });
 }

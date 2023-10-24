@@ -26,13 +26,15 @@ type UploadFileResponse = {
   fileUploadName: string;
 };
 
-export const uploadFile = async (
+export const UploadFile = async (
   file: MultipartFile
 ): Promise<UploadFileResponse> => {
   let result;
   let error;
   const { fileUploadName, uploadDir } = await createFile(file);
   try {
+    console.info(`[${UploadFile.name}] - Uploading file: ${fileUploadName}`);
+
     const resultUpload = await S3.send(
       new PutObjectCommand({
         Bucket: "bucket-audio-techvideo",
@@ -42,6 +44,8 @@ export const uploadFile = async (
       })
     );
 
+    console.info(`[${UploadFile.name}] - File saved successfully in cloud`);
+
     result = {
       status:
         resultUpload.$metadata.httpStatusCode == 200
@@ -50,10 +54,16 @@ export const uploadFile = async (
       uploadDir,
       fileUploadName,
     };
-  } catch (e) {
+  } catch (err) {
+    const stringifyError = JSON.stringify(err);
+
+    console.error(
+      `[${DownloadFile.name}] - Error executing: ${stringifyError}`
+    );
+
     error = {
       status: Status.ERROR,
-      errorStack: e,
+      errorStack: err,
     };
   } finally {
     await removeFile(uploadDir);
@@ -64,10 +74,12 @@ export const uploadFile = async (
   }
 };
 
-export const downloadFile = async (fileName: string) => {
+export const DownloadFile = async (fileName: string) => {
   const uploadDir = path.resolve(await getTmpDir(), fileName);
 
   try {
+    console.info(`[${DownloadFile.name}] - Downloading file: ${fileName}`);
+
     const downloadFile = await S3.send(
       new GetObjectCommand({
         Bucket: "bucket-audio-techvideo",
@@ -88,9 +100,18 @@ export const downloadFile = async (fileName: string) => {
           .on("close", () => resolve({ status: Status.SUCCESS }));
       }
     });
+    console.info(
+      `[${DownloadFile.name}] - File saved successfully in temporary directory`
+    );
 
     return await setTmpFile;
   } catch (error) {
+    const stringifyError = JSON.stringify(error);
+
+    console.error(
+      `[${DownloadFile.name}] - Error executing: ${stringifyError}`
+    );
+
     throw {
       status: Status.ERROR,
       errorStack: error,

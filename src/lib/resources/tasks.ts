@@ -10,6 +10,11 @@ export const CreateTask = async (
   req: any,
   res: any
 ): Promise<void> => {
+  console.info(
+    `[MIDDLEWARE] ${new Date()} - Starting '${
+      req.originalUrl
+    }' Request Body: ${JSON.stringify(req.body)}`
+  );
   const { redis } = app;
   const delayTime = 1000 * 60 * 5; //5min
   const date = new Date();
@@ -43,13 +48,16 @@ export const CreateTask = async (
   cleanedTaskList.push(task);
   await redis.set(key, JSON.stringify(cleanedTaskList));
 
+  console.info(`[MIDDLEWARE] - Task created successfully - ${task.taskId}`);
   return;
 };
 
 export const GetTaskById = async (
   app: FastifyInstance,
   id: string
-): Promise<Task> => {
+): Promise<Task | null> => {
+  console.info(`[MIDDLEWARE] - Getting task - ${id}`);
+
   const { redis } = app;
 
   const taskListString = await redis.get(key);
@@ -67,6 +75,8 @@ export const UpdateTaskById = async (
   data?: object,
   errors?: object
 ): Promise<Task> => {
+  console.info(`[MIDDLEWARE] - Updating task - ${id}`);
+
   const { redis } = app;
   let taskUpdated = {} as Task;
 
@@ -88,6 +98,8 @@ export const UpdateTaskById = async (
   });
 
   await redis.set(key, JSON.stringify(newTaskList));
+
+  console.info(`[MIDDLEWARE] - Task Updated - ${taskUpdated}`);
 
   return taskUpdated;
 };
