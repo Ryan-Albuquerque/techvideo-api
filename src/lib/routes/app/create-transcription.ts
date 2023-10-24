@@ -3,7 +3,7 @@ import { createReadStream } from "node:fs";
 import { z } from "zod";
 import { prisma } from "../../database";
 import { openai } from "../../resources/openai";
-import { downloadFile } from "../../resources/cloudflare";
+import { DownloadFile } from "../../resources/cloudflare";
 import { readdir, unlink } from "node:fs/promises";
 import { getTmpDir, removeFile } from "../../utils/fileHandler";
 import { delay } from "../../utils/delay";
@@ -38,12 +38,18 @@ export async function CreateTranscription(app: FastifyInstance) {
         return res.status(400).send({ message: "No video found" });
       }
 
+      console.info(
+        `[${CreateTranscription.name}] - Returning taskId: ${taskId}`
+      );
+
       res.send({ taskId });
 
-      await downloadFile(video.uploadName);
+      await DownloadFile(video.uploadName);
 
       const videoPath = video.path;
       const audioReadStream = createReadStream(videoPath);
+
+      console.info(`[${CreateTranscription.name}] - Starting AI query`);
 
       await delay(5000);
 
@@ -55,6 +61,10 @@ export async function CreateTranscription(app: FastifyInstance) {
         temperature: 0,
         prompt: body.prompt,
       });
+
+      console.info(
+        `[${CreateTranscription.name}] - AI query completed successfully: ${result.text}`
+      );
 
       const transcription = result.text;
 
@@ -73,13 +83,19 @@ export async function CreateTranscription(app: FastifyInstance) {
     } catch (err) {
       await readdir(dir).then((f) => Promise.all(f.map((e) => unlink(e))));
 
+      const stringifyError = JSON.stringify(err);
+      console.error(
+        `[${CreateTranscription.name}] - Error executing: ${stringifyError}`
+      );
+
       error = err;
     } finally {
-      await UpdateTaskById(
-        app,
-        taskId,
-        response,
-        error as object
+      await UpdateTaskById(app, taskId, response, error as object);
+
+      console.info(
+        `[${CreateTranscription.name}] - Updating task result: ${JSON.stringify(
+          response
+        )} - error: ${JSON.stringify(error)}`
       );
 
       return;

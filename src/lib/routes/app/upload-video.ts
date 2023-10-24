@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import { fastifyMultipart } from "@fastify/multipart";
 import path from "node:path";
 import { prisma } from "../../database/index";
-import { uploadFile } from "../../resources/cloudflare";
+import { UploadFile } from "../../resources/cloudflare";
 import { UpdateTaskById } from "../../resources/tasks";
 
 export async function UploadVideo(app: FastifyInstance) {
@@ -35,7 +35,7 @@ export async function UploadVideo(app: FastifyInstance) {
 
       res.send({ taskId });
 
-      const { fileUploadName, uploadDir } = await uploadFile(data);
+      const { fileUploadName, uploadDir } = await UploadFile(data);
 
       console.info(`[${UploadVideo.name}] - File uploaded: ${uploadDir}`);
 
@@ -46,8 +46,12 @@ export async function UploadVideo(app: FastifyInstance) {
           uploadName: fileUploadName,
         },
       });
-    } catch (e) {
-      error = e;
+    } catch (err) {
+      const stringifyError = JSON.stringify(err);
+      console.error(
+        `[${UploadVideo.name}] - Error executing: ${stringifyError}`
+      );
+      error = err;
     } finally {
       await UpdateTaskById(app, taskId, response, error as object);
       console.info(

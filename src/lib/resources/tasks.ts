@@ -55,7 +55,7 @@ export const CreateTask = async (
 export const GetTaskById = async (
   app: FastifyInstance,
   id: string
-): Promise<Task> => {
+): Promise<Task | null> => {
   console.info(`[MIDDLEWARE] - Getting task - ${id}`);
 
   const { redis } = app;
