@@ -99,7 +99,7 @@ export const UpdateTaskById = async (
 
   await redis.set(key, JSON.stringify(newTaskList));
 
-  console.info(`[MIDDLEWARE] - Task Updated - ${taskUpdated}`);
+  console.info(`[MIDDLEWARE] - Task Updated - ${JSON.stringify(taskUpdated)}`);
 
   return taskUpdated;
 };
