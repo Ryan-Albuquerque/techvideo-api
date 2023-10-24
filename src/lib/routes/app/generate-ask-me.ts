@@ -6,7 +6,7 @@ import { UpdateTaskById } from "../../resources/tasks";
 
 export async function GenerateAskMe(app: FastifyInstance) {
   app.post("/", async (req, res) => {
-    const taskId = res.locals.taskId;
+    const taskId = (res as any).locals.taskId;
     let response, error;
 
     try {

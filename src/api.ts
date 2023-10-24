@@ -12,13 +12,10 @@ app.register(fastifyCors, {
   credentials: true,
 });
 
-app.register(
-  fastifyRedis,
-  {
-    url: process.env.REDIS_URL,
-  },
-  { pluginTimeout: 10000 }
-);
+app.register(fastifyRedis, {
+  url: process.env.REDIS_URL,
+  connectTimeout: 10000,
+});
 
 app.register(Routes);
 

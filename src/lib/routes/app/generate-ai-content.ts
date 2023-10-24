@@ -8,7 +8,7 @@ import { UpdateTaskById } from "../../resources/tasks";
 
 export async function GenerateAiContent(app: FastifyInstance) {
   app.post("/content", async (req, res) => {
-    const taskId = res.locals.taskId;
+    const taskId = (res as any).locals.taskId;
     let response, error;
 
     try {
