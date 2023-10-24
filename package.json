@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx watch src/api.ts",
     "start": "tsx src/api.ts",
     "vercel-build": "npx prisma generate && tsx prisma/seed.ts"
