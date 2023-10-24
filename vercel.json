@@ -3,7 +3,7 @@
   "builds": [
     {
       "use": "@vercel/node",
-      "src": "/src/api.ts"
+      "src": "src/api.ts"
     }
   ],
   "routes": [
