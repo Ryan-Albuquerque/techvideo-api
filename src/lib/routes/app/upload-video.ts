@@ -40,9 +40,14 @@ export async function UploadVideo(app: FastifyInstance) {
         },
       });
     } catch (e) {
-      error = JSON.stringify(e);
+      error = e;
     } finally {
-      const result = await UpdateTaskById(app, taskId, response, error);
+      const result = await UpdateTaskById(
+        app,
+        taskId,
+        response,
+        error as object
+      );
 
       return res.send({ result });
     }
